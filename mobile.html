@@ -234,27 +234,28 @@
             margin-bottom: var(--space-4);
         }
 
-        .special-prize {
-            background: linear-gradient(135deg, rgba(192, 46, 46, 0.2), rgba(212, 175, 55, 0.1));
-            padding: var(--space-4);
-            text-align: center;
-            border-bottom: 1px solid rgba(212, 175, 55, 0.2);
+        /* Special Prize Row Style */
+        .special-row {
+            background: linear-gradient(90deg, rgba(212, 175, 55, 0.15), transparent);
+            border-bottom: 1px solid rgba(212, 175, 55, 0.3);
+            padding: var(--space-3);
         }
 
-        .special-label {
-            font-size: var(--font-xs);
-            color: var(--color-gold);
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            margin-bottom: var(--space-2);
+        .special-row .prize-label {
+            color: var(--color-hot);
+            font-size: var(--font-base);
+            width: 80px;
+            /* Slightly wider for G.ĐB */
+            display: flex;
+            align-items: center;
         }
 
-        .special-number {
-            font-size: var(--font-3xl);
+        .special-number-text {
+            font-size: var(--font-2xl);
             font-weight: 800;
-            color: white;
+            color: var(--color-hot);
             letter-spacing: 2px;
-            text-shadow: 0 2px 10px rgba(192, 46, 46, 0.3);
+            text-shadow: 0 0 10px rgba(255, 71, 87, 0.3);
         }
 
         .prize-list {
@@ -675,10 +676,14 @@
             <div class="tab-panel active" id="results-panel">
                 <!-- Results Card -->
                 <div class="results-card" id="resultsCard">
-                    <div class="special-prize">
-                        <div class="special-label">Giải Đặc Biệt</div>
-                        <div class="special-number" id="specialPrize">-----</div>
+                    <!-- Special Prize as Row -->
+                    <div class="prize-row special-row">
+                        <div class="prize-label">G.ĐB</div>
+                        <div class="prize-values">
+                            <span class="special-number-text" id="specialPrize">-----</span>
+                        </div>
                     </div>
+
                     <div class="prize-list" id="prizeList">
                         <div class="loading">
                             <div class="spinner"></div>
@@ -799,7 +804,7 @@
 
     <!-- Scripts -->
     <script src="api.js"></script>
-    <script src="mobile-app.js"></script>
+    <script src="mobile-app.js?v=2"></script>
 </body>
 
 </html>
