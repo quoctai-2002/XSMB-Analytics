@@ -56,7 +56,8 @@ class MobileApp {
             if (typeof API !== 'undefined') {
                 console.log('[MobileApp] API module found, calling fetchLatest...');
                 try {
-                    const result = await API.fetchLatest(30);
+                    // Fetch 60 days to match PC Cold Number logic
+                    const result = await API.fetchLatest(60);
                     console.log('[MobileApp] API result:', result);
                     if (result.success && result.data && result.data.length > 0) {
                         this.lotteryData = result.data;
@@ -71,7 +72,7 @@ class MobileApp {
             // Fallback: fetch directly if API failed or not available
             if (!dataLoaded) {
                 console.log('[MobileApp] Using direct fetch fallback...');
-                const response = await fetch('https://xoso188.net/api/front/open/lottery/history/list/game?limitNum=30&gameCode=miba');
+                const response = await fetch('https://xoso188.net/api/front/open/lottery/history/list/game?limitNum=60&gameCode=miba');
                 const data = await response.json();
                 console.log('[MobileApp] Direct API response:', data);
 
@@ -136,30 +137,69 @@ class MobileApp {
     }
 
     calculateFrequencies() {
-        this.frequencyData = {};
+        // 1. Calculate HOT numbers (Based on last 7 days - Matching PC)
+        const hotDays = 7;
+        const hotDataSlice = this.lotteryData.slice(0, hotDays);
+        const hotFreq = {};
+
+        hotDataSlice.forEach(issue => {
+            this.extractNumbers(issue).forEach(num => {
+                hotFreq[num] = (hotFreq[num] || 0) + 1;
+            });
+        });
+
+        // 2. Calculate COLD numbers (Days since last appearance - Matching PC)
+        // Check entire loaded history (up to 60 days)
+        const lastSeen = {}; // { '00': 5 (days ago), ... }
         for (let i = 0; i < 100; i++) {
-            this.frequencyData[i.toString().padStart(2, '0')] = 0;
+            const k = i.toString().padStart(2, '0');
+            lastSeen[k] = this.lotteryData.length; // Default to max loaded
         }
 
-        const last30Days = this.lotteryData.slice(0, 30);
-        last30Days.forEach(day => {
-            if (day.ket_qua) {
-                // Extract all numbers from ket_qua
-                Object.values(day.ket_qua).forEach(prizeArray => {
-                    if (Array.isArray(prizeArray)) {
-                        prizeArray.forEach(num => {
-                            const numStr = String(num).trim();
-                            if (numStr.length >= 2) {
-                                const last2 = numStr.slice(-2);
-                                if (this.frequencyData.hasOwnProperty(last2)) {
-                                    this.frequencyData[last2]++;
-                                }
-                            }
-                        });
-                    }
-                });
-            }
+        this.lotteryData.forEach((issue, daysAgo) => {
+            const nums = this.extractNumbers(issue);
+            nums.forEach(n => {
+                // We want the MOST RECENT appearance (smallest daysAgo)
+                if (lastSeen[n] === this.lotteryData.length) {
+                    lastSeen[n] = daysAgo;
+                }
+            });
         });
+
+        // 3. For Prediction, we might want a longer term frequency (e.g. 30 days)
+        const predictSlice = this.lotteryData.slice(0, 30);
+        this.frequencyData = {}; // Using this for prediction sorting
+        predictSlice.forEach(issue => {
+            this.extractNumbers(issue).forEach(num => {
+                this.frequencyData[num] = (this.frequencyData[num] || 0) + 1;
+            });
+        });
+
+        // --- Store processed stats for UI ---
+
+        // Hot: Top frequent in 7 days
+        this.hotStats = Object.entries(hotFreq)
+            .map(([num, count]) => ({ num, count }))
+            .sort((a, b) => b.count - a.count);
+
+        // Cold: Top days since
+        this.coldStats = Object.entries(lastSeen)
+            .map(([num, days]) => ({ num, days }))
+            .sort((a, b) => b.days - a.days); // Descending days (gan lâu nhất)
+    }
+
+    // Helper to extract all numbers from an issue
+    extractNumbers(issue) {
+        if (!issue || !issue.ket_qua) return [];
+        let nums = [];
+        // DB
+        if (issue.ket_qua['giai-db']) nums.push(...issue.ket_qua['giai-db']);
+        // Other prizes
+        ['giai-nhat', 'giai-nhi', 'giai-ba', 'giai-tu', 'giai-nam', 'giai-sau', 'giai-bay'].forEach(key => {
+            if (issue.ket_qua[key]) nums.push(...issue.ket_qua[key]);
+        });
+        // Ensure 2 digits format strings
+        return nums.map(n => String(n).trim().slice(-2));
     }
 
     updateUI() {
@@ -308,95 +348,227 @@ class MobileApp {
     updateStats() {
         // Hottest number
         let hottest = { num: '--', count: 0 };
-        let coldest = { num: '--', count: Infinity };
+        // Update 3 top cards: Hot, Cold, Date using pre-calculated stats from calculateFrequencies
+        const panels = document.querySelectorAll('.stat-card');
+        if (panels.length < 3) return;
 
-        Object.entries(this.frequencyData).forEach(([num, count]) => {
-            if (count > hottest.count) {
-                hottest = { num, count };
-            }
-            if (count < coldest.count) {
-                coldest = { num, count };
-            }
-        });
+        // 1. Hot Symbol (Top 1 Hot - 7 days)
+        const topHot = this.hotStats.length > 0 ? this.hotStats[0] : { num: '--', count: 0 };
+        const hotPanel = panels[0];
+        hotPanel.querySelector('.stat-value').textContent = topHot.num;
+        hotPanel.querySelector('.stat-label').textContent = `${topHot.count} lần (7 ngày)`;
 
-        document.getElementById('hottestNumber').textContent = hottest.num;
-        document.getElementById('coldestNumber').textContent = coldest.num;
-        document.getElementById('totalDays').textContent = Math.min(this.lotteryData.length, 30);
+        // 2. Cold Symbol (Top 1 Cold - Days Since)
+        const topCold = this.coldStats.length > 0 ? this.coldStats[0] : { num: '--', days: 0 };
+        const coldPanel = panels[1];
+        coldPanel.querySelector('.stat-value').textContent = topCold.num;
+        coldPanel.querySelector('.stat-label').textContent = `${topCold.days} ngày chưa về`;
 
-        // Average
-        const total = Object.values(this.frequencyData).reduce((a, b) => a + b, 0);
-        const avg = (total / 100).toFixed(1);
-        document.getElementById('avgCount').textContent = avg;
+        // 3. Current Date Info
+        const datePanel = panels[2];
+        const dayStr = this.currentDate.getDate();
+        datePanel.querySelector('.stat-value').textContent = dayStr;
+        datePanel.querySelector('.stat-label').textContent = `Tháng ${this.currentDate.getMonth() + 1}`;
     }
 
     updateFrequencyGrid() {
         const grid = document.getElementById('frequencyGrid');
         if (!grid) return;
 
-        const sortedEntries = Object.entries(this.frequencyData)
-            .sort((a, b) => b[1] - a[1]);
-
-        const maxCount = sortedEntries[0]?.[1] || 1;
-        const minCount = sortedEntries[sortedEntries.length - 1]?.[1] || 0;
-
-        // Render in order 00-99
+        // Show frequency of 00-99 based on 30-day data (stored in this.frequencyData)
         let html = '';
         for (let i = 0; i < 100; i++) {
             const num = i.toString().padStart(2, '0');
             const count = this.frequencyData[num] || 0;
-
-            let className = 'number-item';
-            if (count >= maxCount - 1) className += ' hot';
-            else if (count <= minCount + 1) className += ' cold';
+            // Highlight logic
+            let className = 'freq-item';
+            if (count >= 10) className += ' high';
+            else if (count <= 2) className += ' low';
 
             html += `
                 <div class="${className}">
-                    <div class="number-val">${num}</div>
-                    <div class="number-count">${count} lần</div>
+                    <div class="freq-num">${num}</div>
+                    <div class="freq-count">${count}</div>
                 </div>
             `;
         }
-
         grid.innerHTML = html;
+    }
+
+    // ==========================================
+    // AI PREDICTION ENGINE
+    // ==========================================
+
+    generateAIPredictions() {
+        if (this.lotteryData.length === 0) return [];
+
+        // 1. Data Prep
+        const currentNumbers = this.extractNumbers(this.lotteryData[0]);
+        const sampleSize = Math.min(this.lotteryData.length, 60);
+
+        // 2. Calculate Component Scores
+        const markovProbs = this.analyzeMarkov(currentNumbers, sampleSize);
+        const poissonProbs = this.analyzePoisson(sampleSize);
+        const varianceMap = this.analyzeVariance(30);
+        const coldMap = this.coldStats.reduce((acc, curr) => ({ ...acc, [curr.num]: curr.days }), {});
+
+        // 3. Aggregate Scores
+        const finalScores = [];
+        for (let i = 0; i < 100; i++) {
+            const num = String(i).padStart(2, '0');
+            let score = 0;
+            const factors = [];
+
+            // A. Markov (35%)
+            const mRaw = markovProbs[num] || 0;
+            const mScore = Math.min(mRaw * 40, 100);
+
+            // B. Poisson (25%)
+            const pRaw = poissonProbs[num] || 0;
+            const pScore = pRaw * 100;
+
+            // C. Variance (20%)
+            const zScore = varianceMap[num] || 0;
+            const vScore = Math.max(0, zScore * 20);
+
+            // D. Cold/Cycle (20%)
+            const daysSince = coldMap[num] || 0;
+            let cScore = 0;
+            if (daysSince > 10 && daysSince < 25) cScore = 80; // Golden cycle
+            else if (daysSince >= 25) cScore = 60 + Math.min(daysSince, 30);
+            else cScore = 20;
+
+            // Weighted Sum
+            score += mScore * 0.35;
+            score += pScore * 0.25;
+            score += vScore * 0.20;
+            score += cScore * 0.20;
+
+            // Determine primary factors
+            if (mScore > 60) factors.push('Markov');
+            if (pScore > 25) factors.push('Poisson');
+            if (zScore > 1.5) factors.push('Cầu Đỏ');
+            if (daysSince > 12) factors.push('Nhịp Đẹp');
+
+            finalScores.push({
+                num,
+                score,
+                factors: factors.length > 0 ? factors : ['Tần suất']
+            });
+        }
+
+        // Sort by Score Descending
+        return finalScores.sort((a, b) => b.score - a.score);
+    }
+
+    analyzeMarkov(currentNumbers, samples) {
+        const results = this.lotteryData.slice(0, samples);
+        if (results.length < 2) return {};
+
+        const transitions = {};
+        // Train
+        for (let i = 1; i < results.length; i++) {
+            const prevDraw = this.extractNumbers(results[i]);
+            const nextDraw = this.extractNumbers(results[i - 1]);
+
+            prevDraw.forEach(prev => {
+                if (!transitions[prev]) transitions[prev] = { total: 0, nextCounts: {} };
+                transitions[prev].total++;
+                nextDraw.forEach(next => {
+                    transitions[prev].nextCounts[next] = (transitions[prev].nextCounts[next] || 0) + 1;
+                });
+            });
+        }
+
+        // Predict
+        const probs = {};
+        currentNumbers.forEach(todayNum => {
+            const state = transitions[todayNum];
+            if (state && state.total > 0) {
+                Object.entries(state.nextCounts).forEach(([nextNum, count]) => {
+                    probs[nextNum] = (probs[nextNum] || 0) + (count / state.total);
+                });
+            }
+        });
+        return probs;
+    }
+
+    analyzePoisson(samples) {
+        const results = this.lotteryData.slice(0, samples);
+        const counts = {};
+        for (let i = 0; i < 100; i++) counts[String(i).padStart(2, '0')] = 0;
+
+        results.forEach(res => {
+            const nums = new Set(this.extractNumbers(res));
+            nums.forEach(n => counts[n]++);
+        });
+
+        const probs = {};
+        const total = results.length || 1;
+        Object.entries(counts).forEach(([num, count]) => {
+            const lambda = count / total;
+            probs[num] = 1 - Math.exp(-lambda);
+        });
+        return probs;
+    }
+
+    analyzeVariance(samples) {
+        const results = this.lotteryData.slice(0, samples);
+        const theoretical = 27 / 100;
+        const expected = samples * theoretical;
+        const stdDev = Math.sqrt(samples * theoretical * (1 - theoretical));
+
+        const counts = {};
+        results.forEach(res => {
+            this.extractNumbers(res).forEach(n => counts[n] = (counts[n] || 0) + 1);
+        });
+
+        const zScores = {}; // Variance Map
+        for (let i = 0; i < 100; i++) {
+            const num = String(i).padStart(2, '0');
+            const actual = counts[num] || 0;
+            zScores[num] = (actual - expected) / stdDev;
+        }
+        return zScores;
     }
 
     updatePredictions() {
         const grid = document.getElementById('predictionGrid');
         const btSection = document.getElementById('bachThuSection');
         const btNumber = document.getElementById('bachThuNumber');
+        const btDesc = document.getElementById('bachThuDesc');
 
         if (!grid) return;
 
-        // Sort frequency data
-        const sorted = Object.entries(this.frequencyData)
-            .sort((a, b) => b[1] - a[1]);
+        // Use AI Predictions instead of simple frequency
+        const aiPredictions = this.generateAIPredictions();
+        const top10 = aiPredictions.slice(0, 10);
 
-        // 1. Bach Thu (Top 1)
-        if (sorted.length > 0) {
-            const [btNum, btCount] = sorted[0];
-            const btConf = Math.min(Math.round((btCount / 30) * 100) + 10, 99); // Boost confidence slightly for top 1
+        // 1. Bach Thu (Top 1 AI)
+        if (top10.length > 0) {
+            const best = top10[0];
+            const confidence = Math.min(Math.round(best.score / 3 * 100) + 20, 99); // Normalize a bit for display
 
             if (btSection && btNumber) {
                 btSection.style.display = 'block';
-                btNumber.textContent = btNum;
-                // Optional: Update desc with confidence
-                const btDesc = document.getElementById('bachThuDesc');
-                if (btDesc) btDesc.textContent = `Độ tin cậy: ${btConf}% (Xuất hiện ${btCount}/30 lần)`;
+                btNumber.textContent = best.num;
+                if (btDesc) btDesc.textContent = `Độ tin cậy: ${confidence}% (${best.factors.join(' + ')})`;
             }
-
-            // Remove top 1 from grid list
-            sorted.shift();
+            // Remove top 1 from grid
+            top10.shift();
         }
 
-        // 2. Top Grid (Next 6 numbers)
-        const topNumbers = sorted.slice(0, 6);
+        // 2. Top Grid (Next numbers)
         let html = '';
-        topNumbers.forEach(([num, count]) => {
-            const confidence = Math.round((count / 30) * 100);
+        top10.slice(0, 6).forEach(item => {
+            const confidence = Math.round(item.score * 10); // Rough pct
+            const displayConf = Math.min(confidence + 30, 98);
+
             html += `
                 <div class="prediction-card">
-                    <div class="prediction-num">${num}</div>
-                    <div class="prediction-conf">${confidence}%</div>
+                    <div class="prediction-num">${item.num}</div>
+                    <div class="prediction-conf">${displayConf}%</div>
+                    <div style="font-size: 9px; color: #fff; opacity: 0.5;">${item.factors[0]}</div>
                 </div>
             `;
         });
