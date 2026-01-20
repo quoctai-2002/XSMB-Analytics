@@ -180,12 +180,23 @@ class MobileApp {
         const todayData = this.findDataByDate(this.currentDate);
         const statusBadge = document.getElementById('statusBadge');
 
+        // Debug info attach
+        statusBadge.onclick = () => {
+            if (!todayData) {
+                const target = this.normalizeDateStr(this.formatDateForAPI(this.currentDate));
+                const available = this.lotteryData.map(d => this.normalizeDateStr(d.ngay)).slice(0, 5).join(', ');
+                alert(`Debug Info:\nTarget: "${target}"\nAvailable: ${available}\nRaw API Date: ${this.lotteryData[0]?.ngay}`);
+            }
+        };
+
         if (todayData) {
             statusBadge.textContent = 'Đã có kết quả';
             statusBadge.style.color = 'var(--color-success)';
+            statusBadge.style.cursor = 'default';
         } else {
-            statusBadge.textContent = 'Chưa có kết quả';
+            statusBadge.textContent = 'Chưa có kết quả (Click test)';
             statusBadge.style.color = 'var(--text-muted)';
+            statusBadge.style.cursor = 'pointer';
         }
     }
 
@@ -433,8 +444,16 @@ class MobileApp {
     }
 
     findDataByDate(date) {
-        const dateStr = this.formatDateForAPI(date);
-        return this.lotteryData.find(d => d.ngay === dateStr);
+        const targetStr = this.normalizeDateStr(this.formatDateForAPI(date));
+        return this.lotteryData.find(d => this.normalizeDateStr(d.ngay) === targetStr);
+    }
+
+    // Helper to accept various formats like d/m/yyyy or dd/mm/yyyy
+    normalizeDateStr(dateStr) {
+        if (!dateStr) return '';
+        const parts = dateStr.trim().split('/');
+        if (parts.length !== 3) return dateStr.trim();
+        return parts.map(p => p.padStart(2, '0')).join('/');
     }
 
     formatDate(date) {
@@ -448,7 +467,7 @@ class MobileApp {
         const d = date.getDate().toString().padStart(2, '0');
         const m = (date.getMonth() + 1).toString().padStart(2, '0');
         const y = date.getFullYear();
-        return `${d}/${m}/${y}`; // Format: DD/MM/YYYY to match API turnNum
+        return `${d}/${m}/${y}`;
     }
 }
 
