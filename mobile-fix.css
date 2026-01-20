@@ -1,44 +1,45 @@
 /* ========================================
-   Mobile-First CSS Fix - Tabler Inspired
+   Mobile-First Fluid Design - Tabler Inspired
    Add this at the END of style.css
    ======================================== */
 
-/* ===== Mobile Base (< 576px) - Tabler Patterns ===== */
+/* ===== Fluid Base (< 576px) ===== */
 @media (max-width: 575.98px) {
 
-    /* Spacing scale from Tabler */
+    /* Fluid Typography & Spacing Scale */
     :root {
-        --spacing-xs: 0.25rem;
-        /* 4px */
-        --spacing-sm: 0.5rem;
-        /* 8px */
-        --spacing-md: 0.75rem;
-        /* 12px */
-        --spacing-lg: 1rem;
-        /* 16px */
-        --spacing-xl: 1.5rem;
-        /* 24px */
-        --font-size-base: 0.875rem;
-        /* 14px - Tabler default */
+        /* Fluid Font Sizes: clamp(min, preferred, max) */
+        --font-size-xs: clamp(0.7rem, 3vw, 0.75rem);
+        --font-size-sm: clamp(0.75rem, 3.5vw, 0.875rem);
+        --font-size-base: clamp(0.875rem, 4vw, 1rem);
+        --font-size-lg: clamp(1rem, 4.5vw, 1.125rem);
+        --font-size-xl: clamp(1.125rem, 5vw, 1.25rem);
+        --font-size-2xl: clamp(1.25rem, 6vw, 1.5rem);
+
+        /* Fluid Spacing */
+        --spacing-xs: clamp(0.25rem, 1vw, 0.375rem);
+        --spacing-sm: clamp(0.375rem, 2vw, 0.5rem);
+        --spacing-md: clamp(0.5rem, 3vw, 0.75rem);
+        --spacing-lg: clamp(0.75rem, 4vw, 1rem);
     }
 
-    /* Container - Full width on mobile */
+    /* Container - Fluid padding */
     .container {
-        padding-left: 0.75rem;
-        padding-right: 0.75rem;
+        padding-left: clamp(0.5rem, 3vw, 0.75rem);
+        padding-right: clamp(0.5rem, 3vw, 0.75rem);
+        width: 100%;
     }
 
-    /* HEADER - Compact like Tabler navbar */
+    /* HEADER */
     .header {
-        min-height: 3.5rem;
-        /* 56px fixed height */
+        min-height: clamp(3rem, 10vh, 3.5rem);
         padding: 0;
         box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
     }
 
     .header-content {
-        min-height: 3.5rem;
-        padding: 0 0.75rem;
+        min-height: clamp(3rem, 10vh, 3.5rem);
+        padding: 0 clamp(0.5rem, 3vw, 0.75rem);
     }
 
     .logo {
@@ -46,20 +47,21 @@
     }
 
     .logo-icon {
-        width: 2rem;
-        height: 2rem;
-        font-size: 1rem;
+        width: clamp(1.75rem, 8vw, 2rem);
+        height: clamp(1.75rem, 8vw, 2rem);
+        font-size: clamp(0.875rem, 4vw, 1rem);
         border-radius: 0.375rem;
         animation: none;
         /* Disable animation on mobile for performance */
     }
 
     .logo-text h1 {
-        font-size: 0.9375rem;
+        font-size: var(--font-size-base);
         animation: none;
         background: linear-gradient(135deg, #fff, var(--color-gold));
         -webkit-background-clip: text;
         background-clip: text;
+        white-space: nowrap;
     }
 
     .logo-text p {
@@ -73,8 +75,8 @@
     }
 
     .header-actions .btn-icon {
-        width: 2.25rem;
-        height: 2.25rem;
+        width: clamp(2rem, 9vw, 2.25rem);
+        height: clamp(2rem, 9vw, 2.25rem);
         border-radius: 0.375rem;
     }
 
@@ -86,10 +88,10 @@
         gap: 0.375rem;
     }
 
-    /* HERO SECTION - Compact */
+    /* HERO SECTION */
     .hero-section {
-        padding: 1rem;
-        margin-bottom: 1rem;
+        padding: var(--spacing-md);
+        margin-bottom: var(--spacing-md);
         border-radius: 0.75rem;
     }
 
@@ -99,27 +101,28 @@
     }
 
     #latestDate {
-        font-size: 1.75rem !important;
+        font-size: clamp(1.5rem, 7vw, 1.75rem) !important;
         text-shadow: none !important;
     }
 
-    /* STATS GRID - Single column */
+    /* STATS GRID - Fluid Columns */
     .stats-grid-modern {
-        grid-template-columns: 1fr;
-        gap: 0.5rem;
-        margin-bottom: 1rem;
+        /* Auto-fit columns: min 100px, max 1fr. Stacks if too narrow */
+        grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
+        gap: var(--spacing-sm);
+        margin-bottom: var(--spacing-md);
     }
 
     .stat-card-modern,
     .glass-card {
-        padding: 0.75rem 1rem;
+        padding: var(--spacing-md);
         border-radius: 0.5rem;
     }
 
     .stat-icon-box {
-        width: 2.5rem;
-        height: 2.5rem;
-        font-size: 1.25rem;
+        width: clamp(2rem, 10vw, 2.5rem);
+        height: clamp(2rem, 10vw, 2.5rem);
+        font-size: clamp(1rem, 5vw, 1.25rem);
         border-radius: 0.375rem;
     }
 
@@ -129,22 +132,27 @@
     }
 
     .stat-info .value {
-        font-size: 1.125rem;
+        font-size: var(--font-size-lg);
     }
 
-    /* DATE NAVIGATION */
+    /* DATE NAVIGATION - Fluid Layout */
     .section-header {
         margin-bottom: 0.75rem !important;
     }
 
     .date-navigation {
-        gap: 0.375rem;
+        display: flex;
+        justify-content: space-between;
+        gap: var(--spacing-xs);
+        width: 100%;
     }
 
     .date-nav-btn {
-        padding: 0.5rem 0.75rem;
-        font-size: 0.875rem;
+        padding: var(--spacing-sm) var(--spacing-md);
+        font-size: var(--font-size-sm);
         min-width: 2.25rem;
+        flex: 0 0 auto;
+        /* Prevent shrinking too much */
     }
 
     .today-btn {
@@ -153,24 +161,30 @@
     }
 
     .date-display {
-        min-width: 6rem;
+        flex: 1;
+        /* Take remaining space */
+        min-width: 0;
+        /* Allow text truncate if needed */
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
     }
 
     .date-text {
-        font-size: 0.8125rem;
+        font-size: var(--font-size-base);
     }
 
-    /* TABS - Horizontal scroll */
+    /* TABS - Horizontal Scroll */
     .tabs-container-modern {
         width: 100%;
-        margin: 0 0 1rem 0;
-        padding: 0.25rem;
+        margin: 0 0 var(--spacing-lg) 0;
+        padding: var(--spacing-xs);
         border-radius: 0.5rem;
         overflow-x: auto;
         overflow-y: hidden;
         -webkit-overflow-scrolling: touch;
         scrollbar-width: none;
-        gap: 0.25rem;
+        gap: var(--spacing-xs);
     }
 
     .tabs-container-modern::-webkit-scrollbar {
@@ -178,18 +192,18 @@
     }
 
     .tab-pill {
-        padding: 0.5rem 0.75rem;
-        font-size: 0.75rem;
+        padding: var(--spacing-sm) var(--spacing-md);
+        font-size: var(--font-size-xs);
         white-space: nowrap;
         flex-shrink: 0;
         border-radius: 0.375rem;
-        min-height: 2.25rem;
+        min-height: clamp(2rem, 8vw, 2.25rem);
     }
 
-    /* SECTIONS - Tabler card-sm pattern */
+    /* SECTIONS */
     .section {
-        padding: 0.75rem;
-        margin-bottom: 0.75rem;
+        padding: var(--spacing-md);
+        margin-bottom: var(--spacing-md);
         border-radius: 0.5rem;
     }
 
@@ -203,7 +217,7 @@
         margin-bottom: 0.75rem;
     }
 
-    /* RESULTS - Stacked layout */
+    /* RESULTS - Flexible Layout */
     .results-premium {
         border-radius: 0.5rem;
     }
@@ -219,14 +233,14 @@
     }
 
     .special-number-text {
-        font-size: 2rem;
+        font-size: clamp(1.5rem, 8vw, 2rem);
         letter-spacing: 2px;
     }
 
     .gold-ball {
-        width: 2.25rem;
-        height: 2.25rem;
-        font-size: 1rem;
+        width: clamp(1.75rem, 9vw, 2.25rem);
+        height: clamp(1.75rem, 9vw, 2.25rem);
+        font-size: clamp(0.875rem, 4vw, 1rem);
     }
 
     .special-prize-balls {
@@ -236,27 +250,31 @@
     .prize-row {
         display: flex;
         flex-direction: column;
-        gap: 0.25rem;
-        padding: 0.5rem 0.625rem;
+        gap: var(--spacing-xs);
+        padding: var(--spacing-sm);
         align-items: flex-start;
     }
 
     .prize-label {
-        font-size: 0.625rem;
+        font-size: var(--font-size-xs);
         color: var(--color-gold);
     }
 
     .prize-values {
         display: flex;
         flex-wrap: wrap;
-        gap: 0.25rem;
+        gap: var(--spacing-xs);
         width: 100%;
+        justify-content: flex-start;
+        /* Align left */
     }
 
     .prize-number {
-        font-size: 0.8125rem;
+        font-size: var(--font-size-sm);
         padding: 0.125rem 0.375rem;
         border-radius: 0.25rem;
+        /* Ensure numbers don't wrap weirdly */
+        white-space: nowrap;
     }
 
     /* LOTO TABLES */
@@ -283,24 +301,25 @@
         font-size: 0.6875rem;
     }
 
-    /* NUMBER GRID - 5 columns */
+    /* NUMBER GRID - Auto-fit Grid */
     .number-grid {
-        grid-template-columns: repeat(5, 1fr);
-        gap: 0.375rem;
+        /* Flexible grid: columns at least 45px wide */
+        grid-template-columns: repeat(auto-fill, minmax(45px, 1fr));
+        gap: var(--spacing-xs);
     }
 
     .number-item {
-        padding: 0.375rem 0.25rem;
+        padding: var(--spacing-xs);
         border-radius: 0.375rem;
-        min-height: 3rem;
+        min-height: clamp(2.5rem, 10vw, 3rem);
     }
 
     .number-value {
-        font-size: 0.9375rem;
+        font-size: var(--font-size-base);
     }
 
     .number-count {
-        font-size: 0.5625rem;
+        font-size: 0.6rem;
     }
 
     /* NUMBER LIST - Hot/Cold */
@@ -358,11 +377,11 @@
         font-size: 0.625rem;
     }
 
-    /* PREDICTIONS */
+    /* PREDICTIONS - Flexible Grid */
     .predictions-list,
     .predictions-container {
-        grid-template-columns: repeat(3, 1fr);
-        gap: 0.375rem;
+        grid-template-columns: repeat(auto-fit, minmax(90px, 1fr));
+        gap: var(--spacing-xs);
     }
 
     .prediction-item,
@@ -372,7 +391,7 @@
     }
 
     .prediction-number {
-        font-size: 1.125rem;
+        font-size: var(--font-size-lg);
     }
 
     .prediction-confidence {
@@ -406,7 +425,7 @@
     }
 
     .vip-number {
-        font-size: 1.5rem;
+        font-size: var(--font-size-xl);
     }
 
     .vip-label {
@@ -510,48 +529,18 @@
         box-shadow: var(--glass-shadow);
     }
 
-    /* Disable animations for performance */
-    .logo-icon,
-    .logo-text h1,
-    .sparkle {
-        animation: none !important;
-    }
-}
-
-/* ===== Extra Small (< 375px) ===== */
-@media (max-width: 374.98px) {
-    .container {
-        padding-left: 0.5rem;
-        padding-right: 0.5rem;
+    /* DISABLE ANIMATIONS ON MOBILE */
+    *,
+    *::before,
+    *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+        scroll-behavior: auto !important;
     }
 
-    .header-content {
-        padding: 0 0.5rem;
-    }
-
-    .logo-text h1 {
-        font-size: 0.8125rem;
-    }
-
-    #latestDate {
-        font-size: 1.5rem !important;
-    }
-
-    .number-grid {
-        grid-template-columns: repeat(4, 1fr);
-    }
-
-    .predictions-list,
-    .predictions-container {
-        grid-template-columns: repeat(2, 1fr);
-    }
-
-    .loto-tables {
-        grid-template-columns: 1fr;
-    }
-
-    .tab-pill {
-        padding: 0.375rem 0.5rem;
-        font-size: 0.6875rem;
+    /* Ensure scrolling is smooth only where needed */
+    .tabs-container-modern {
+        -webkit-overflow-scrolling: touch;
     }
 }
