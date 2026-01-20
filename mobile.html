@@ -283,7 +283,9 @@
             flex: 1;
             display: flex;
             flex-wrap: wrap;
-            gap: var(--space-2);
+            gap: var(--space-3);
+            justify-content: center;
+            /* Center align items */
         }
 
         .prize-num {
@@ -555,6 +557,54 @@
             margin-top: var(--space-1);
         }
 
+        /* Bach Thu Card */
+        .bach-thu-card {
+            background: linear-gradient(135deg, #1e293b, #0f172a);
+            border: 1px solid var(--color-gold);
+            border-radius: var(--radius-md);
+            padding: var(--space-4);
+            text-align: center;
+            margin-bottom: var(--space-4);
+            box-shadow: 0 4px 15px rgba(212, 175, 55, 0.15);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .bach-thu-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 2px;
+            background: linear-gradient(90deg, transparent, var(--color-gold), transparent);
+        }
+
+        .bach-thu-title {
+            font-size: var(--font-sm);
+            color: var(--color-gold);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: var(--space-2);
+            font-weight: 600;
+        }
+
+        .bach-thu-number {
+            font-size: 3.5rem;
+            font-weight: 800;
+            background: linear-gradient(to bottom, #fff, #cbd5e1);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+            line-height: 1.1;
+        }
+
+        .bach-thu-desc {
+            font-size: var(--font-xs);
+            color: var(--text-secondary);
+            margin-top: var(--space-2);
+        }
+
         /* ==========================================
            FOOTER
            ========================================== */
@@ -705,6 +755,18 @@
             <!-- Tab: Predictions -->
             <div class="tab-panel" id="prediction-panel">
                 <h3 class="section-title">🔮 Dự Đoán Hôm Nay</h3>
+
+                <!-- Bach Thu Section -->
+                <div id="bachThuSection" style="display: none;">
+                    <div class="bach-thu-card">
+                        <div class="bach-thu-title">⭐ Bạch Thủ Lô ⭐</div>
+                        <div class="bach-thu-number" id="bachThuNumber">--</div>
+                        <div class="bach-thu-desc" id="bachThuDesc">Độ tin cậy cao nhất</div>
+                    </div>
+                </div>
+
+                <div class="section-title" style="font-size: var(--font-sm); margin-top: var(--space-4);">✨ Top Số Đẹp
+                </div>
                 <div class="prediction-grid" id="predictionGrid">
                     <div class="loading">
                         <div class="spinner"></div>

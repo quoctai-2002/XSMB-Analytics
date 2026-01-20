@@ -362,15 +362,36 @@ class MobileApp {
 
     updatePredictions() {
         const grid = document.getElementById('predictionGrid');
+        const btSection = document.getElementById('bachThuSection');
+        const btNumber = document.getElementById('bachThuNumber');
+
         if (!grid) return;
 
-        // Simple prediction: top 6 hot numbers
+        // Sort frequency data
         const sorted = Object.entries(this.frequencyData)
-            .sort((a, b) => b[1] - a[1])
-            .slice(0, 6);
+            .sort((a, b) => b[1] - a[1]);
 
+        // 1. Bach Thu (Top 1)
+        if (sorted.length > 0) {
+            const [btNum, btCount] = sorted[0];
+            const btConf = Math.min(Math.round((btCount / 30) * 100) + 10, 99); // Boost confidence slightly for top 1
+
+            if (btSection && btNumber) {
+                btSection.style.display = 'block';
+                btNumber.textContent = btNum;
+                // Optional: Update desc with confidence
+                const btDesc = document.getElementById('bachThuDesc');
+                if (btDesc) btDesc.textContent = `Độ tin cậy: ${btConf}% (Xuất hiện ${btCount}/30 lần)`;
+            }
+
+            // Remove top 1 from grid list
+            sorted.shift();
+        }
+
+        // 2. Top Grid (Next 6 numbers)
+        const topNumbers = sorted.slice(0, 6);
         let html = '';
-        sorted.forEach(([num, count]) => {
+        topNumbers.forEach(([num, count]) => {
             const confidence = Math.round((count / 30) * 100);
             html += `
                 <div class="prediction-card">
