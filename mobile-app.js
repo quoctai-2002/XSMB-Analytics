@@ -42,20 +42,40 @@ class MobileApp {
     }
 
     async loadData() {
+        const statusBadge = document.getElementById('statusBadge');
+        const prizeList = document.getElementById('prizeList');
+
         try {
-            // Use existing API module
+            statusBadge.textContent = 'Đang tải...';
+            statusBadge.style.color = 'var(--color-gold)';
+            console.log('[MobileApp] Starting data load...');
+
+            let dataLoaded = false;
+
+            // Try API module first
             if (typeof API !== 'undefined') {
-                const result = await API.fetchLatest(30);
-                if (result.success && result.data) {
-                    this.lotteryData = result.data;
-                } else {
-                    throw new Error(result.error || 'Failed to fetch data');
+                console.log('[MobileApp] API module found, calling fetchLatest...');
+                try {
+                    const result = await API.fetchLatest(30);
+                    console.log('[MobileApp] API result:', result);
+                    if (result.success && result.data && result.data.length > 0) {
+                        this.lotteryData = result.data;
+                        dataLoaded = true;
+                        console.log('[MobileApp] Loaded', this.lotteryData.length, 'records from API module');
+                    }
+                } catch (apiError) {
+                    console.error('[MobileApp] API module error:', apiError);
                 }
-            } else {
-                // Fallback: fetch directly
+            }
+
+            // Fallback: fetch directly if API failed or not available
+            if (!dataLoaded) {
+                console.log('[MobileApp] Using direct fetch fallback...');
                 const response = await fetch('https://xoso188.net/api/front/open/lottery/history/list/game?limitNum=30&gameCode=miba');
                 const data = await response.json();
-                if (data.success && data.t && data.t.issueList) {
+                console.log('[MobileApp] Direct API response:', data);
+
+                if (data.success && data.t && data.t.issueList && data.t.issueList.length > 0) {
                     // Parse the data manually
                     this.lotteryData = data.t.issueList.map(issue => {
                         try {
@@ -75,17 +95,43 @@ class MobileApp {
                                 openTime: issue.openTime
                             };
                         } catch (e) {
+                            console.error('[MobileApp] Error parsing issue:', e);
                             return null;
                         }
                     }).filter(r => r !== null);
+
+                    console.log('[MobileApp] Loaded', this.lotteryData.length, 'records from direct fetch');
+                    dataLoaded = true;
                 }
+            }
+
+            if (!dataLoaded || this.lotteryData.length === 0) {
+                throw new Error('Không có dữ liệu');
+            }
+
+            console.log('[MobileApp] Data loaded successfully. First record:', this.lotteryData[0]);
+
+            // Auto-set date to latest result if today has no data
+            const latestDateStr = this.lotteryData[0].ngay; // DD/MM/YYYY
+            const todayStr = this.formatDateForAPI(new Date()); // DD/MM/YYYY
+
+            if (latestDateStr !== todayStr) {
+                console.log('[MobileApp] Today has no data, defaulting to latest:', latestDateStr);
+                // Parse DD/MM/YYYY to Date object
+                const [day, month, year] = latestDateStr.split('/');
+                this.currentDate = new Date(year, month - 1, day);
             }
 
             this.calculateFrequencies();
             this.updateUI();
+
         } catch (error) {
-            console.error('Error loading data:', error);
-            document.getElementById('statusBadge').textContent = 'Lỗi tải dữ liệu';
+            console.error('[MobileApp] Error loading data:', error);
+            statusBadge.textContent = 'Lỗi: ' + error.message;
+            statusBadge.style.color = '#ff6b6b';
+            if (prizeList) {
+                prizeList.innerHTML = '<div style="padding: 20px; text-align: center; color: #ff6b6b;">Lỗi tải dữ liệu. Vui lòng thử lại.</div>';
+            }
         }
     }
 
