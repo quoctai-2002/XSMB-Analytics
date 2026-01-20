@@ -1,0 +1,743 @@
+<!DOCTYPE html>
+<html lang="vi">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>XSMB Analytics - Mobile</title>
+    <meta name="description" content="Xổ số miền Bắc - Giao diện di động">
+
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+
+    <style>
+        /* ==========================================
+           MOBILE-FIRST DESIGN SYSTEM
+           ========================================== */
+        :root {
+            /* Colors */
+            --bg-primary: #0f172a;
+            --bg-secondary: #1e293b;
+            --bg-card: rgba(30, 41, 59, 0.8);
+            --text-primary: #e2e8f0;
+            --text-secondary: #94a3b8;
+            --text-muted: #64748b;
+            --color-primary: #C02E2E;
+            --color-gold: #D4AF37;
+            --color-hot: #ff6b6b;
+            --color-cold: #45b7d1;
+            --color-success: #10b981;
+
+            /* Spacing - 4px base */
+            --space-1: 4px;
+            --space-2: 8px;
+            --space-3: 12px;
+            --space-4: 16px;
+            --space-5: 20px;
+            --space-6: 24px;
+
+            /* Typography */
+            --font-xs: 11px;
+            --font-sm: 13px;
+            --font-base: 15px;
+            --font-lg: 17px;
+            --font-xl: 20px;
+            --font-2xl: 24px;
+            --font-3xl: 32px;
+
+            /* Border Radius */
+            --radius-sm: 6px;
+            --radius-md: 10px;
+            --radius-lg: 14px;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            font-size: var(--font-base);
+            line-height: 1.5;
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        /* ==========================================
+           HEADER - Fixed, Compact
+           ========================================== */
+        .header {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 56px;
+            background: rgba(15, 23, 42, 0.95);
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            z-index: 100;
+            display: flex;
+            align-items: center;
+            padding: 0 var(--space-4);
+        }
+
+        .header-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            width: 100%;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: var(--space-2);
+        }
+
+        .logo-icon {
+            width: 32px;
+            height: 32px;
+            background: linear-gradient(135deg, var(--color-primary), #d14040);
+            border-radius: var(--radius-sm);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+        }
+
+        .logo-text {
+            font-size: var(--font-base);
+            font-weight: 700;
+            color: white;
+        }
+
+        .header-actions {
+            display: flex;
+            gap: var(--space-2);
+        }
+
+        .btn-icon {
+            width: 36px;
+            height: 36px;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: var(--radius-sm);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 16px;
+            cursor: pointer;
+            color: white;
+        }
+
+        .btn-icon:active {
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        /* ==========================================
+           MAIN CONTENT
+           ========================================== */
+        .main {
+            padding-top: 56px;
+            /* Header height */
+            padding-bottom: 70px;
+            /* Bottom nav height */
+        }
+
+        .container {
+            padding: var(--space-3);
+        }
+
+        /* ==========================================
+           DATE PICKER - Sticky
+           ========================================== */
+        .date-picker {
+            position: sticky;
+            top: 56px;
+            z-index: 50;
+            background: var(--bg-primary);
+            padding: var(--space-3) var(--space-3) var(--space-2);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: var(--space-2);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .date-btn {
+            width: 40px;
+            height: 40px;
+            background: var(--bg-card);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: var(--radius-sm);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 16px;
+            cursor: pointer;
+            color: var(--text-primary);
+        }
+
+        .date-btn:active {
+            background: var(--bg-secondary);
+        }
+
+        .date-display {
+            flex: 1;
+            text-align: center;
+        }
+
+        .date-text {
+            font-size: var(--font-lg);
+            font-weight: 700;
+            color: white;
+        }
+
+        .date-status {
+            font-size: var(--font-xs);
+            color: var(--color-gold);
+            margin-top: 2px;
+        }
+
+        .today-btn {
+            padding: var(--space-2) var(--space-3);
+            background: var(--color-primary);
+            border: none;
+            border-radius: var(--radius-sm);
+            color: white;
+            font-size: var(--font-sm);
+            font-weight: 600;
+            cursor: pointer;
+        }
+
+        .today-btn:active {
+            opacity: 0.8;
+        }
+
+        /* ==========================================
+           RESULTS TABLE - Priority Content
+           ========================================== */
+        .results-card {
+            background: var(--bg-card);
+            border-radius: var(--radius-lg);
+            overflow: hidden;
+            margin-bottom: var(--space-4);
+        }
+
+        .special-prize {
+            background: linear-gradient(135deg, rgba(192, 46, 46, 0.2), rgba(212, 175, 55, 0.1));
+            padding: var(--space-4);
+            text-align: center;
+            border-bottom: 1px solid rgba(212, 175, 55, 0.2);
+        }
+
+        .special-label {
+            font-size: var(--font-xs);
+            color: var(--color-gold);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: var(--space-2);
+        }
+
+        .special-number {
+            font-size: var(--font-3xl);
+            font-weight: 800;
+            color: white;
+            letter-spacing: 2px;
+            text-shadow: 0 2px 10px rgba(192, 46, 46, 0.3);
+        }
+
+        .prize-list {
+            padding: var(--space-2) 0;
+        }
+
+        .prize-row {
+            display: flex;
+            padding: var(--space-2) var(--space-3);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .prize-row:last-child {
+            border-bottom: none;
+        }
+
+        .prize-label {
+            width: 60px;
+            font-size: var(--font-xs);
+            color: var(--color-gold);
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+
+        .prize-values {
+            flex: 1;
+            display: flex;
+            flex-wrap: wrap;
+            gap: var(--space-2);
+        }
+
+        .prize-num {
+            font-size: var(--font-sm);
+            font-weight: 600;
+            color: var(--text-primary);
+            font-family: 'SF Mono', 'Consolas', monospace;
+        }
+
+        .prize-num.highlight {
+            color: var(--color-hot);
+        }
+
+        /* ==========================================
+           LOTO TABLES - Side by Side
+           ========================================== */
+        .loto-section {
+            margin-bottom: var(--space-4);
+        }
+
+        .loto-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: var(--space-2);
+        }
+
+        .loto-card {
+            background: var(--bg-card);
+            border-radius: var(--radius-md);
+            overflow: hidden;
+        }
+
+        .loto-header {
+            background: rgba(212, 175, 55, 0.1);
+            padding: var(--space-2) var(--space-3);
+            text-align: center;
+            font-size: var(--font-xs);
+            font-weight: 600;
+            color: var(--color-gold);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .loto-body {
+            padding: var(--space-2);
+        }
+
+        .loto-row {
+            display: flex;
+            padding: var(--space-1) var(--space-2);
+            font-size: var(--font-sm);
+        }
+
+        .loto-row:nth-child(odd) {
+            background: rgba(255, 255, 255, 0.02);
+        }
+
+        .loto-head {
+            width: 24px;
+            color: var(--text-secondary);
+            font-weight: 500;
+        }
+
+        .loto-nums {
+            flex: 1;
+            color: var(--text-primary);
+            font-family: 'SF Mono', 'Consolas', monospace;
+        }
+
+        /* ==========================================
+           STATS CARDS - Horizontal Scroll
+           ========================================== */
+        .stats-section {
+            margin-bottom: var(--space-4);
+        }
+
+        .stats-scroll {
+            display: flex;
+            gap: var(--space-3);
+            overflow-x: auto;
+            padding-bottom: var(--space-2);
+            scroll-snap-type: x mandatory;
+            -webkit-overflow-scrolling: touch;
+        }
+
+        .stats-scroll::-webkit-scrollbar {
+            display: none;
+        }
+
+        .stat-card {
+            flex: 0 0 auto;
+            width: 120px;
+            background: var(--bg-card);
+            border-radius: var(--radius-md);
+            padding: var(--space-3);
+            text-align: center;
+            scroll-snap-align: start;
+        }
+
+        .stat-icon {
+            font-size: 24px;
+            margin-bottom: var(--space-2);
+        }
+
+        .stat-value {
+            font-size: var(--font-xl);
+            font-weight: 700;
+            color: white;
+        }
+
+        .stat-label {
+            font-size: var(--font-xs);
+            color: var(--text-secondary);
+            margin-top: var(--space-1);
+        }
+
+        /* ==========================================
+           BOTTOM NAVIGATION
+           ========================================== */
+        .bottom-nav {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 60px;
+            background: rgba(15, 23, 42, 0.98);
+            backdrop-filter: blur(10px);
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            padding: 0 var(--space-2);
+            z-index: 100;
+        }
+
+        .nav-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            width: 64px;
+            height: 48px;
+            background: none;
+            border: none;
+            color: var(--text-muted);
+            font-size: var(--font-xs);
+            cursor: pointer;
+            transition: color 0.2s;
+        }
+
+        .nav-item.active {
+            color: var(--color-primary);
+        }
+
+        .nav-icon {
+            font-size: 20px;
+            margin-bottom: 2px;
+        }
+
+        /* ==========================================
+           TAB CONTENT PANELS
+           ========================================== */
+        .tab-panel {
+            display: none;
+        }
+
+        .tab-panel.active {
+            display: block;
+        }
+
+        /* ==========================================
+           NUMBER GRID
+           ========================================== */
+        .number-grid {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: var(--space-2);
+        }
+
+        .number-item {
+            background: var(--bg-card);
+            border-radius: var(--radius-sm);
+            padding: var(--space-2);
+            text-align: center;
+        }
+
+        .number-val {
+            font-size: var(--font-lg);
+            font-weight: 700;
+            color: white;
+        }
+
+        .number-count {
+            font-size: var(--font-xs);
+            color: var(--text-secondary);
+        }
+
+        .number-item.hot {
+            background: rgba(255, 107, 107, 0.15);
+            border: 1px solid rgba(255, 107, 107, 0.3);
+        }
+
+        .number-item.hot .number-val {
+            color: var(--color-hot);
+        }
+
+        .number-item.cold {
+            background: rgba(69, 183, 209, 0.15);
+            border: 1px solid rgba(69, 183, 209, 0.3);
+        }
+
+        .number-item.cold .number-val {
+            color: var(--color-cold);
+        }
+
+        /* ==========================================
+           SECTION TITLES
+           ========================================== */
+        .section-title {
+            font-size: var(--font-base);
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: var(--space-3);
+            display: flex;
+            align-items: center;
+            gap: var(--space-2);
+        }
+
+        /* ==========================================
+           CHART CONTAINER
+           ========================================== */
+        .chart-card {
+            background: var(--bg-card);
+            border-radius: var(--radius-md);
+            padding: var(--space-3);
+            margin-bottom: var(--space-4);
+        }
+
+        .chart-wrapper {
+            height: 180px;
+        }
+
+        /* ==========================================
+           PREDICTION CARDS
+           ========================================== */
+        .prediction-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: var(--space-2);
+        }
+
+        .prediction-card {
+            background: linear-gradient(135deg, rgba(192, 46, 46, 0.15), rgba(212, 175, 55, 0.1));
+            border: 1px solid rgba(212, 175, 55, 0.2);
+            border-radius: var(--radius-md);
+            padding: var(--space-3);
+            text-align: center;
+        }
+
+        .prediction-num {
+            font-size: var(--font-2xl);
+            font-weight: 800;
+            color: white;
+        }
+
+        .prediction-conf {
+            font-size: var(--font-xs);
+            color: var(--color-gold);
+            margin-top: var(--space-1);
+        }
+
+        /* ==========================================
+           FOOTER
+           ========================================== */
+        .footer-info {
+            text-align: center;
+            padding: var(--space-4);
+            color: var(--text-muted);
+            font-size: var(--font-xs);
+        }
+
+        /* ==========================================
+           LOADING STATE
+           ========================================== */
+        .loading {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: var(--space-6);
+        }
+
+        .spinner {
+            width: 32px;
+            height: 32px;
+            border: 3px solid rgba(255, 255, 255, 0.1);
+            border-top-color: var(--color-primary);
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+        }
+
+        @keyframes spin {
+            to {
+                transform: rotate(360deg);
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Header -->
+    <header class="header">
+        <div class="header-content">
+            <div class="logo">
+                <div class="logo-icon">📊</div>
+                <div class="logo-text">XSMB Analytics</div>
+            </div>
+            <div class="header-actions">
+                <button class="btn-icon" id="refreshBtn">🔄</button>
+                <button class="btn-icon" id="settingsBtn">⚙️</button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="main">
+        <!-- Date Picker -->
+        <div class="date-picker">
+            <button class="date-btn" id="prevDateBtn">◀</button>
+            <div class="date-display">
+                <div class="date-text" id="currentDateDisplay">--/--/----</div>
+                <div class="date-status" id="statusBadge">Đang tải...</div>
+            </div>
+            <button class="date-btn" id="nextDateBtn">▶</button>
+            <button class="today-btn" id="todayBtn">Hôm nay</button>
+        </div>
+
+        <div class="container">
+            <!-- Tab: Results (Default) -->
+            <div class="tab-panel active" id="results-panel">
+                <!-- Results Card -->
+                <div class="results-card" id="resultsCard">
+                    <div class="special-prize">
+                        <div class="special-label">Giải Đặc Biệt</div>
+                        <div class="special-number" id="specialPrize">-----</div>
+                    </div>
+                    <div class="prize-list" id="prizeList">
+                        <div class="loading">
+                            <div class="spinner"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Loto Tables -->
+                <div class="loto-section">
+                    <div class="loto-grid">
+                        <div class="loto-card">
+                            <div class="loto-header">Đầu → Loto</div>
+                            <div class="loto-body" id="lotoHead">
+                                <div class="loading">
+                                    <div class="spinner"></div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="loto-card">
+                            <div class="loto-header">Đuôi → Loto</div>
+                            <div class="loto-body" id="lotoTail">
+                                <div class="loading">
+                                    <div class="spinner"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Stats Cards -->
+                <div class="stats-section">
+                    <div class="stats-scroll">
+                        <div class="stat-card">
+                            <div class="stat-icon">🔥</div>
+                            <div class="stat-value" id="hottestNumber">--</div>
+                            <div class="stat-label">Số Hot</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-icon">❄️</div>
+                            <div class="stat-value" id="coldestNumber">--</div>
+                            <div class="stat-label">Số Gan</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-icon">📅</div>
+                            <div class="stat-value" id="totalDays">0</div>
+                            <div class="stat-label">Ngày dữ liệu</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-icon">📈</div>
+                            <div class="stat-value" id="avgCount">--</div>
+                            <div class="stat-label">TB/Số</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Tab: Statistics -->
+            <div class="tab-panel" id="stats-panel">
+                <h3 class="section-title">📊 Biểu Đồ Tần Suất</h3>
+                <div class="chart-card">
+                    <div class="chart-wrapper">
+                        <canvas id="frequencyChart"></canvas>
+                    </div>
+                </div>
+
+                <h3 class="section-title">🔢 Tần Suất 00-99</h3>
+                <div class="number-grid" id="frequencyGrid">
+                    <div class="loading">
+                        <div class="spinner"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Tab: Predictions -->
+            <div class="tab-panel" id="prediction-panel">
+                <h3 class="section-title">🔮 Dự Đoán Hôm Nay</h3>
+                <div class="prediction-grid" id="predictionGrid">
+                    <div class="loading">
+                        <div class="spinner"></div>
+                    </div>
+                </div>
+
+                <div class="footer-info">
+                    Dự đoán dựa trên phân tích thống kê<br>
+                    Chỉ mang tính chất tham khảo
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Bottom Navigation -->
+    <nav class="bottom-nav">
+        <button class="nav-item active" data-tab="results">
+            <span class="nav-icon">🎰</span>
+            <span>Kết quả</span>
+        </button>
+        <button class="nav-item" data-tab="stats">
+            <span class="nav-icon">📊</span>
+            <span>Thống kê</span>
+        </button>
+        <button class="nav-item" data-tab="prediction">
+            <span class="nav-icon">🔮</span>
+            <span>Dự đoán</span>
+        </button>
+    </nav>
+
+    <!-- Scripts -->
+    <script src="api.js"></script>
+    <script src="mobile-app.js"></script>
+</body>
+
+</html>
