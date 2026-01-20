@@ -1,0 +1,276 @@
+<!DOCTYPE html>
+<html lang="vi">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Thống Kê Xổ Số Miền Bắc - Dự Đoán Thông Minh</title>
+    <meta name="description" content="Tool thống kê và phân tích xác suất xổ số miền Bắc với dữ liệu thời gian thực">
+
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap"
+        rel="stylesheet">
+
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+
+    <!-- Styles -->
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+    <!-- Header -->
+    <header class="header">
+        <div class="container">
+            <div class="header-content">
+                <div class="logo">
+                    <div class="logo-icon">📊</div>
+                    <div class="logo-text">
+                        <h1>XSMB Analytics</h1>
+                        <p>Thống Kê & Dự Đoán Thông Minh</p>
+                    </div>
+                </div>
+                <div class="header-actions">
+                    <button class="btn btn-icon" id="refreshBtn" title="Làm mới dữ liệu">
+                        <span class="icon">🔄</span>
+                    </button>
+                    <button class="btn btn-icon" id="settingsBtn" title="Cài đặt">
+                        <span class="icon">⚙️</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="main">
+        <div class="container">
+
+            <!-- Hero Section (Latest Result) -->
+            <section class="hero-section">
+                <div
+                    style="font-size: 14px; text-transform: uppercase; color: var(--color-gold); letter-spacing: 2px; margin-bottom: 10px;">
+                    Kết Quả Mới Nhất</div>
+                <div id="latestDate"
+                    style="font-size: 48px; font-weight: 800; color: white; text-shadow: 0 0 20px rgba(255,255,255,0.3);">
+                    --/--/----</div>
+                <div style="margin-top: 15px;">
+                    <span class="badge" id="statusBadge"
+                        style="background: rgba(255,255,255,0.1); backdrop-filter: blur(5px);">Đang tải...</span>
+                </div>
+            </section>
+
+            <!-- Modern Stats Grid -->
+            <section class="stats-grid-modern">
+                <div class="glass-card stat-card-modern">
+                    <div class="stat-icon-box" style="color: #ff6b6b;">🔥</div>
+                    <div class="stat-info">
+                        <h4>Số Hot Nhất</h4>
+                        <p class="value" id="hottestNumber">--</p>
+                    </div>
+                </div>
+                <div class="glass-card stat-card-modern">
+                    <div class="stat-icon-box" style="color: #45b7d1;">❄️</div>
+                    <div class="stat-info">
+                        <h4>Số Gan Nhất</h4>
+                        <p class="value" id="coldestNumber">--</p>
+                    </div>
+                </div>
+                <div class="glass-card stat-card-modern">
+                    <div class="stat-icon-box" style="color: #ffd700;">📈</div>
+                    <div class="stat-info">
+                        <h4>Dữ Liệu</h4>
+                        <p class="value" id="totalDays">0 ngày</p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Date Navigation & Results -->
+            <section class="section">
+                <div class="section-header" style="justify-content: center; margin-bottom: 20px;">
+                    <!-- Date Navigation Moved Here -->
+                    <div class="date-navigation">
+                        <button class="date-nav-btn" id="prevDateBtn">◀</button>
+                        <div class="date-display">
+                            <span class="date-text" id="currentDateDisplay">--/--/----</span>
+                        </div>
+                        <button class="date-nav-btn" id="nextDateBtn">▶</button>
+                        <button class="date-nav-btn today-btn" id="todayBtn">Hôm nay</button>
+                    </div>
+                </div>
+
+                <div class="results-container" id="latestResults">
+                    <div class="loading-spinner"></div>
+                </div>
+            </section>
+
+            <!-- Modern Pill Tabs -->
+            <div style="text-align: center; margin: 40px 0;">
+                <div class="tabs-container-modern">
+                    <button class="tab-pill active" data-tab="frequency">📊 Tần Suất</button>
+                    <button class="tab-pill" data-tab="hotcold">🌡️ Gan/Lâu Về</button>
+                    <button class="tab-pill" data-tab="pairs">🔗 Cặp Số</button>
+                    <button class="tab-pill" data-tab="prediction">🔮 Dự Đoán</button>
+                </div>
+            </div>
+
+            <!-- Tab Content -->
+            <div class="tab-content">
+
+                <!-- Frequency Tab -->
+                <div class="tab-pane active" id="frequency-tab">
+                    <div class="section">
+                        <h3 class="subsection-title">Biểu Đồ Tần Suất (30 ngày gần nhất)</h3>
+                        <div class="chart-container">
+                            <canvas id="frequencyChart"></canvas>
+                        </div>
+                    </div>
+                    <div class="section">
+                        <h3 class="subsection-title">Bảng Xếp Hạng</h3>
+                        <div class="number-grid" id="frequencyGrid"></div>
+                    </div>
+                </div>
+
+                <!-- Hot/Cold Tab -->
+                <div class="tab-pane" id="hotcold-tab">
+                    <div class="two-columns">
+                        <div class="section">
+                            <h3 class="subsection-title">🔥 Số Nóng (Hot Numbers)</h3>
+                            <p class="section-desc">Các số xuất hiện nhiều trong 7 ngày gần nhất</p>
+                            <div class="number-list" id="hotNumbers"></div>
+                        </div>
+                        <div class="section">
+                            <h3 class="subsection-title">❄️ Số Gan (Cold Numbers)</h3>
+                            <p class="section-desc">Các số lâu chưa xuất hiện</p>
+                            <div class="number-list" id="coldNumbers"></div>
+                        </div>
+                    </div>
+                    <div class="section">
+                        <h3 class="subsection-title">Heatmap Tần Suất</h3>
+                        <div class="chart-container">
+                            <canvas id="heatmapChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Pairs Tab -->
+                <div class="tab-pane" id="pairs-tab">
+                    <div class="section">
+                        <h3 class="subsection-title">Cặp Số Hay Cùng Xuất Hiện</h3>
+                        <p class="section-desc">Phân tích các cặp số thường xuất hiện cùng nhau trong cùng ngày</p>
+                        <div class="pairs-grid" id="pairsGrid"></div>
+                    </div>
+                </div>
+
+                <!-- Prediction Tab -->
+                <div class="tab-pane" id="prediction-tab">
+                    <div class="section">
+                        <div class="prediction-header">
+                            <h3 class="subsection-title">Dự Đoán Dựa Trên Xác Suất</h3>
+                            <div class="prediction-controls">
+                                <label>
+                                    <span>Khoảng thời gian:</span>
+                                    <select id="predictionDays">
+                                        <option value="30">30 ngày</option>
+                                        <option value="14">14 ngày</option>
+                                        <option value="7" selected>7 ngày</option>
+                                    </select>
+                                </label>
+                                <label>
+                                    <span>Phương pháp:</span>
+                                    <select id="predictionMethod">
+                                        <option value="combined">Kết hợp (Tần suất + Gan)</option>
+                                        <option value="frequency">Chỉ Tần Suất</option>
+                                        <option value="cold">Chỉ Số Gan</option>
+                                    </select>
+                                </label>
+                            </div>
+                        </div>
+                        <div class="alert alert-info">
+                            ⚠️ <strong>Lưu ý:</strong> Đây chỉ là dự đoán dựa trên thống kê xác suất, không đảm bảo
+                            chính xác 100%. Chỉ nên tham khảo.
+                        </div>
+
+                        <!-- VIP Section: Golden Picks -->
+                        <div id="vipSection" class="vip-section" style="margin-bottom: 24px;">
+                            <!-- Injected by JS -->
+                        </div>
+
+                        <div class="predictions-list" id="predictionsList"></div>
+
+                        <!-- Trend Chart -->
+                        <div class="section chart-section"
+                            style="margin-top: 30px; background: rgba(0,0,0,0.2); padding: 20px; border-radius: 12px; border: 1px solid rgba(255,255,255,0.05);">
+                            <h4 class="subsection-title"
+                                style="color: var(--color-gold); text-align: center; margin-bottom: 20px;">📈 BIỂU ĐỒ
+                                PHONG ĐỘ TOP 1</h4>
+                            <div class="chart-container" style="height: 300px;">
+                                <canvas id="trendChart"></canvas>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-logo">
+                <span class="footer-logo-icon">📊</span>
+                <span class="footer-logo-text">XSMB Analytics</span>
+            </div>
+            <div class="footer-divider"></div>
+            <p>Dữ liệu từ <a href="https://xoso188.net" target="_blank">xoso188.net</a></p>
+            <p class="footer-small">Chỉ phục vụ mục đích tham khảo và nghiên cứu</p>
+            <div class="footer-credits">
+                Made with <span>❤️</span> by Quốc Tài
+            </div>
+        </div>
+    </footer>
+
+    <!-- Settings Modal -->
+    <div class="modal" id="settingsModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Cài Đặt</h3>
+                <button class="modal-close" id="closeModal">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="settings-group">
+                    <h4>Dữ Liệu</h4>
+                    <button class="btn btn-secondary btn-block" id="exportBtn">
+                        📥 Export Dữ Liệu (JSON)
+                    </button>
+                    <button class="btn btn-secondary btn-block" id="importBtn">
+                        📤 Import Dữ Liệu
+                    </button>
+                    <input type="file" id="importFile" accept=".json" style="display: none;">
+                    <button class="btn btn-danger btn-block" id="clearDataBtn">
+                        🗑️ Xóa Toàn Bộ Dữ Liệu
+                    </button>
+                </div>
+                <div class="settings-group">
+                    <h4>Thông Tin</h4>
+                    <p class="settings-info">Phiên bản: 1.0.0</p>
+                    <p class="settings-info">Dữ liệu được lưu trữ cục bộ trên trình duyệt</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="storage.js"></script>
+    <script src="api.js"></script>
+    <script src="statistics.js"></script>
+    <script src="charts.js"></script>
+    <script src="components.js"></script>
+    <script src="app.js"></script>
+</body>
+
+</html>
