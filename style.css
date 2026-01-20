@@ -1474,129 +1474,417 @@ body::before {
 /* ===== Mobile Phones (480px - 575px) ===== */
 @media (max-width: 575px) {
     .container {
-        padding: 0 10px;
+        padding: 0 12px;
     }
 
+    /* Header Mobile Fix */
     .header {
-        padding: var(--spacing-md) 0;
+        padding: var(--spacing-sm) 0;
+    }
+
+    .header-content {
+        flex-direction: row;
+        justify-content: space-between;
+        gap: var(--spacing-sm);
+    }
+
+    .logo {
+        gap: var(--spacing-sm);
     }
 
     .logo-icon {
-        font-size: var(--font-size-2xl);
+        width: 36px;
+        height: 36px;
+        font-size: 18px;
+        border-radius: 8px;
     }
 
     .logo-text h1 {
-        font-size: var(--font-size-lg);
+        font-size: 14px;
+        letter-spacing: 0;
     }
 
     .logo-text p {
-        font-size: var(--font-size-xs);
+        font-size: 9px;
+        display: none;
     }
 
-    .btn-icon {
-        width: 38px;
-        height: 38px;
+    .header-actions {
+        gap: 6px;
     }
 
-    .special-number-text {
-        font-size: 40px;
-        letter-spacing: 4px;
+    .header-actions .btn-icon {
+        width: 36px;
+        height: 36px;
     }
 
-    .special-prize-label {
-        font-size: var(--font-size-xs);
-        letter-spacing: 0.1em;
+    .header-actions .btn-icon .icon {
+        font-size: 16px;
     }
 
-    .gold-ball {
-        width: 44px;
-        height: 44px;
+    /* Hero Section Mobile */
+    .hero-section {
+        padding: 16px 12px;
+        margin-bottom: 16px;
+        border-radius: 16px;
+    }
+
+    #latestDate {
+        font-size: 32px !important;
+    }
+
+    /* Stats Grid Mobile */
+    .stats-grid-modern {
+        grid-template-columns: 1fr;
+        gap: 10px;
+        margin-bottom: 20px;
+    }
+
+    .stat-card-modern,
+    .glass-card {
+        padding: 12px 16px;
+        border-radius: 12px;
+    }
+
+    .stat-icon-box {
+        width: 40px;
+        height: 40px;
         font-size: 20px;
     }
 
+    .stat-info h4 {
+        font-size: 10px;
+    }
+
+    .stat-info .value {
+        font-size: 18px;
+    }
+
+    /* Date Navigation Mobile */
+    .date-navigation {
+        width: 100%;
+        display: flex;
+        justify-content: center;
+        gap: 8px;
+        flex-wrap: wrap;
+    }
+
+    .date-nav-btn {
+        padding: 8px 12px;
+        font-size: 14px;
+    }
+
+    .today-btn {
+        font-size: 12px;
+        padding: 8px 12px;
+    }
+
+    .date-display {
+        font-size: 14px;
+    }
+
+    /* Tabs Mobile - Horizontal Scroll */
+    .tabs-container-modern {
+        width: calc(100% + 24px);
+        margin-left: -12px;
+        margin-right: -12px;
+        padding: 4px 12px;
+        border-radius: 0;
+        overflow-x: auto;
+        overflow-y: hidden;
+        -webkit-overflow-scrolling: touch;
+        scrollbar-width: none;
+        display: flex;
+        justify-content: flex-start;
+        gap: 6px;
+    }
+
+    .tabs-container-modern::-webkit-scrollbar {
+        display: none;
+    }
+
+    .tab-pill {
+        padding: 10px 14px;
+        font-size: 12px;
+        white-space: nowrap;
+        flex-shrink: 0;
+        border-radius: 20px;
+    }
+
+    /* Section Mobile */
+    .section {
+        padding: 14px;
+        margin-bottom: 14px;
+        border-radius: 14px;
+    }
+
+    .subsection-title {
+        font-size: 15px;
+        margin-bottom: 12px;
+    }
+
+    .section-desc {
+        font-size: 11px;
+        margin-bottom: 12px;
+    }
+
+    /* Results Table Mobile */
+    .prize-row {
+        grid-template-columns: 70px 1fr;
+        gap: 8px;
+        padding: 8px 10px;
+    }
+
+    .prize-label {
+        font-size: 11px;
+    }
+
+    .prize-number {
+        font-size: 14px;
+        padding: 3px 6px;
+    }
+
+    .prize-values {
+        gap: 4px;
+        flex-wrap: wrap;
+    }
+
+    /* Special Prize Mobile */
+    .special-prize-section {
+        padding: 16px;
+    }
+
+    .special-prize-label {
+        font-size: 10px;
+        letter-spacing: 0.1em;
+        margin-bottom: 10px;
+    }
+
+    .special-number-text {
+        font-size: 36px;
+        letter-spacing: 3px;
+    }
+
+    .gold-ball {
+        width: 42px;
+        height: 42px;
+        font-size: 18px;
+    }
+
+    .special-prize-balls {
+        gap: 6px;
+    }
+
+    /* Number Grid Mobile */
     .number-grid {
-        grid-template-columns: repeat(4, 1fr);
+        grid-template-columns: repeat(5, 1fr);
         gap: 6px;
     }
 
     .number-item {
         padding: 8px 4px;
+        border-radius: 8px;
     }
 
     .number-value {
-        font-size: var(--font-size-lg);
+        font-size: 16px;
     }
 
+    .number-count {
+        font-size: 9px;
+    }
+
+    /* Predictions Mobile */
     .predictions-container,
     .predictions-list {
-        grid-template-columns: repeat(2, 1fr);
+        grid-template-columns: repeat(3, 1fr);
+        gap: 8px;
+    }
+
+    .prediction-item,
+    .prediction-card {
+        padding: 10px 6px;
+        border-radius: 10px;
     }
 
     .prediction-number {
-        font-size: var(--font-size-xl);
+        font-size: 20px;
     }
 
-    .chart-container {
-        height: 250px;
-        padding: var(--spacing-sm);
+    .prediction-confidence {
+        font-size: 9px;
     }
 
-    .subsection-title {
-        font-size: var(--font-size-lg);
+    /* VIP Section Mobile */
+    .vip-container {
+        gap: 10px;
     }
 
-    .section-desc {
-        font-size: var(--font-size-xs);
+    .golden-ticket {
+        padding: 2px;
     }
 
-    .number-list-item {
-        grid-template-columns: 60px 1fr;
-        padding: 10px;
+    .ticket-content {
+        padding: 12px;
     }
 
-    .number-rank {
-        font-size: 12px;
-        min-width: 18px;
+    .ticket-header {
+        font-size: 10px;
+        letter-spacing: 1px;
+        margin-bottom: 10px;
     }
 
-    .number-badge {
-        font-size: 16px;
-        padding: 5px 10px;
-        min-width: 38px;
-    }
-
-    .pairs-grid {
-        grid-template-columns: 1fr 1fr;
+    .vip-numbers-row {
+        gap: 12px;
+        margin-bottom: 10px;
     }
 
     .vip-number {
         font-size: 28px;
     }
 
-    .ticket-content {
-        padding: 15px;
+    .vip-label {
+        font-size: 10px;
     }
 
-    .ticket-header {
+    .ticket-footer {
+        gap: 8px;
+        flex-wrap: wrap;
+        padding-top: 10px;
+    }
+
+    .ticket-stat {
+        font-size: 10px;
+    }
+
+    /* Chart Mobile */
+    .chart-container {
+        height: 220px;
+        padding: 10px;
+        border-radius: 10px;
+    }
+
+    /* Hot/Cold List Mobile */
+    .number-list {
+        gap: 8px;
+    }
+
+    .number-list-item {
+        grid-template-columns: 55px 1fr;
+        padding: 10px;
+        gap: 8px;
+        border-radius: 10px;
+    }
+
+    .number-rank {
+        font-size: 11px;
+        min-width: 16px;
+    }
+
+    .number-badge {
+        font-size: 15px;
+        padding: 6px 10px;
+        min-width: 36px;
+        border-radius: 8px;
+    }
+
+    .number-meta {
+        grid-column: 1 / -1;
+        margin-top: 6px;
+        font-size: 11px;
+    }
+
+    /* Pairs Grid Mobile */
+    .pairs-grid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 8px;
+    }
+
+    .pair-item {
+        padding: 10px;
+        border-radius: 10px;
+    }
+
+    .pair-numbers {
+        font-size: 18px;
+    }
+
+    .pair-count {
+        font-size: 11px;
+    }
+
+    /* Alert Mobile */
+    .alert {
+        padding: 10px 12px;
         font-size: 12px;
-        letter-spacing: 1px;
+        border-radius: 10px;
     }
 
-    .prize-row {
-        grid-template-columns: 80px 1fr;
-        padding: var(--spacing-xs) var(--spacing-sm);
+    /* Footer Mobile */
+    .footer {
+        padding: 24px 0 16px;
     }
 
-    .prize-label {
-        font-size: var(--font-size-xs);
+    .footer-logo-icon {
+        font-size: 20px;
     }
 
-    .prize-number {
-        font-size: var(--font-size-base);
+    .footer-logo-text {
+        font-size: 14px;
     }
 
-    .prize-values {
-        gap: var(--spacing-xs);
+    .footer p {
+        font-size: 12px;
+    }
+
+    .footer-small {
+        font-size: 10px;
+    }
+
+    .footer-credits {
+        font-size: 10px;
+    }
+
+    /* Modal Mobile */
+    .modal {
+        padding: 10px;
+    }
+
+    .modal-content {
+        margin: 0;
+        max-height: 95vh;
+        border-radius: 16px;
+    }
+
+    .modal-header {
+        padding: 14px;
+    }
+
+    .modal-header h3 {
+        font-size: 16px;
+    }
+
+    .modal-body {
+        padding: 14px;
+    }
+
+    /* Loto Tables Mobile */
+    .loto-section {
+        padding: 14px;
+    }
+
+    .loto-tables {
+        grid-template-columns: 1fr;
+        gap: 12px;
+    }
+
+    .loto-table {
+        padding: 10px;
+    }
+
+    .loto-row {
+        font-size: 12px;
+        padding: 4px 8px;
     }
 }
 
